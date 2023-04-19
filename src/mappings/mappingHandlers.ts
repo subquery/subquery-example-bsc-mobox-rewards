@@ -2,8 +2,10 @@ import { Pool, PoolEvent } from "../types";
 import { DepositLog, WithdrawLog } from "../types/abi-interfaces/MoboxAbi";
 
 async function checkGetPool(id: string): Promise<Pool> {
+  // Try get an existing Pool record first by ID
   let poolRecord = await Pool.get(id);
   if (!poolRecord) {
+    // Pool record does not exist, create one
     poolRecord = Pool.create({
       id: id,
       totalSize: BigInt(0),
@@ -17,6 +19,7 @@ export async function handleDeposit(deposit: DepositLog): Promise<void> {
   logger.info(`New deposit transaction log at block ${deposit.blockNumber}`);
   const poolId = deposit.args[1].toString();
 
+  // Check and get the pool record from the store
   const poolRecord = await checkGetPool(poolId);
 
   const poolEventRecord = PoolEvent.create({
@@ -30,6 +33,7 @@ export async function handleDeposit(deposit: DepositLog): Promise<void> {
   });
   await poolEventRecord.save();
 
+  // Increase the total pool size by the new deposit value
   poolRecord.totalSize += poolEventRecord.value;
   await poolRecord.save();
 }
@@ -38,6 +42,7 @@ export async function handleWithdraw(withdraw: WithdrawLog): Promise<void> {
   logger.info(`New withdraw transaction log at block ${withdraw.blockNumber}`);
   const poolId = withdraw.args[1].toString();
 
+  // Check and get the pool record from the store
   const poolRecord = await checkGetPool(poolId);
 
   const poolEventRecord = PoolEvent.create({
@@ -51,6 +56,7 @@ export async function handleWithdraw(withdraw: WithdrawLog): Promise<void> {
   });
   await poolEventRecord.save();
 
+  // Decrease the total pool size by the new withdrawl value
   poolRecord.totalSize -= poolEventRecord.value;
   await poolRecord.save();
 }

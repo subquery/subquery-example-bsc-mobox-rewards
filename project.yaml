@@ -47,11 +47,9 @@ dataSources:
             topics:
               ## Follows standard log filters https://docs.ethers.io/v5/concepts/events/
               - Deposit(address indexed user, uint256 indexed pid, uint256 amount)
-              # address: "0x60781C2586D68229fde47564546784ab3fACA982"
         - handler: handleWithdraw
           kind: ethereum/LogHandler # We use ethereum handlers since BSC is a layer-2 that is compatible
           filter:
             topics:
               ## Follows standard log filters https://docs.ethers.io/v5/concepts/events/
               - Withdraw(address indexed user, uint256 indexed pid, uint256 amount)
-              # address: "0x60781C2586D68229fde47564546784ab3fACA982"
